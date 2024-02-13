@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+    postgres:
+      image: postgres:13
+      restart: always
+      environment:
+        POSTGRES_USER: local_user
+        POSTGRES_DB: local_db
+        POSTGRES_HOST_AUTH_METHOD: trust
+      volumes:
+        - ./db-data:/var/lib/postgresql/data
+      networks:
+        - metabase-network
+    metabase:
+      environment:
+        MB_DB_DBNAME: local_db
+        MB_DB_HOST: postgres
+        MB_DB_PORT: 5432
+        MB_DB_USER: local_user
+        MB_DB_TYPE: postgres
+      ports:
+        - 3000:3000
+      image: metabase/metabase
+      restart: always
+      depends_on: 
+        - postgres
+      networks:
+        - metabase-network
+networks:
+  metabase-network:
+    driver: bridge
